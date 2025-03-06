@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "390174751424",
+    "project_id": "acne-000",
+    "storage_bucket": "acne-000.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390174751424:android:50c695027677f71d1acb25",
+        "android_client_info": {
+          "package_name": "com.example.acne"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1DboEY5iKiLEqlQ42uNAqMK5-bC0P-RY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390174751424:android:ee6bbc3f92cc04ec1acb25",
+        "android_client_info": {
+          "package_name": "com.example.acne_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1DboEY5iKiLEqlQ42uNAqMK5-bC0P-RY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
