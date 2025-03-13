@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'components/offer_carousel_and_categories.dart';
-import 'components/popular_products.dart';
+import 'components/offer_carousel_and_activities.dart';
+import 'components/recent_scans.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(child: OffersCarouselAndActivities()),
-            const SliverToBoxAdapter(child: PopularScans()),
+            const SliverToBoxAdapter(child: RecentScans()),
           ],
         ),
       ),

@@ -5,20 +5,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants.dart';
-import 'components/product_images.dart';
-import 'components/product_info.dart';
-import 'components/product_list_tile.dart';
+import 'components/acne_images.dart';
+import 'components/acne_info.dart';
+import 'components/acne_list_tile.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
-  const ProductDetailsScreen({
+class ScanDetailsScreen extends StatelessWidget {
+  const ScanDetailsScreen({
     super.key,
     this.isProductAvailable = true,
-    this.showSaveButton = true,
     this.scanData,
   });
 
   final bool isProductAvailable;
-  final bool showSaveButton;
   final Map<String, dynamic>? scanData;
 
   // Function to save data to Firestore with proper authentication check
@@ -97,7 +95,6 @@ class ProductDetailsScreen extends StatelessWidget {
               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               floating: true,
               actions: [
-                if (showSaveButton)
                   IconButton(
                     onPressed: () => _saveToFirestore(context),
                     padding: EdgeInsets.zero,
@@ -114,7 +111,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   ),
               ],
             ),
-            const ProductImages(
+            const AcneImages(
               images: [productDemoImg1, productDemoImg2],
             ),
             ProductInfo(
@@ -124,12 +121,12 @@ class ProductDetailsScreen extends StatelessWidget {
               description:
                   "A cool gray cap in soft corduroy. Watch me.' By buying cotton products from Lindex, you're supporting more responsibly...",
             ),
-            ProductListTile(
+            AcneListTile(
               svgSrc: "assets/icons/Scan.svg",
               title: "Scan Details",
               press: () {},
             ),
-            ProductListTile(
+            AcneListTile(
               svgSrc: "assets/icons/treatment.svg",
               title: "Recommended Treatment",
               press: () {},

@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
+import 'package:acne/route/screen_export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -98,7 +100,15 @@ class DisplayPictureScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      scanDetailsScreenRoute,
+                      arguments: {
+                        'isProductAvailable': Random().nextInt(9).isEven,
+                      },
+                    );
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(
                         16), // Adjust to match desired size

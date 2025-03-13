@@ -5,8 +5,8 @@ import '/route/route_constants.dart';
 
 import '../../../constants.dart';
 
-class BookmarkScreen extends StatelessWidget {
-  const BookmarkScreen({super.key});
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +28,16 @@ class BookmarkScreen extends StatelessWidget {
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
                   return ProductCard(
-                    image: demoPopularScans[index].image,
-                    brandName: demoPopularScans[index].brandName,
-                    title: demoPopularScans[index].title,
-                    dicountpercent: demoPopularScans[index].dicountpercent,
+                    image: demoRecentScans[index].image,
+                    brandName: demoRecentScans[index].brandName,
+                    title: demoRecentScans[index].title,
+                    dicountpercent: demoRecentScans[index].dicountpercent,
                     press: () {
                       Navigator.pushNamed(context, productDetailsScreenRoute);
                     },
                   );
                 },
-                childCount: demoPopularScans.length,
+                childCount: demoRecentScans.length,
               ),
             ),
           ),

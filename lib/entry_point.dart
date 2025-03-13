@@ -15,25 +15,24 @@ class EntryPoint extends StatefulWidget {
 }
 
 class _EntryPointState extends State<EntryPoint> {
+  List<CameraDescription> cameras = [];
+  CameraDescription? firstCamera;
 
-List<CameraDescription> cameras = [];
-CameraDescription? firstCamera;
+  @override
+  void initState() {
+    super.initState();
+    initializeCameras();
+  }
 
-@override
-void initState() {
-  super.initState();
-  initializeCameras();
-}
+  Future<void> initializeCameras() async {
+    cameras = await availableCameras();
+    firstCamera = cameras.first;
+    setState(() {});
+  }
 
-Future<void> initializeCameras() async {
-  cameras = await availableCameras();
-  firstCamera = cameras.first;
-  setState(() {});
-}
-  
   final List _pages = const [
     HomeScreen(),
-    BookmarkScreen(),
+    HistoryScreen(),
     ProfileScreen(),
   ];
   int _currentIndex = 0;

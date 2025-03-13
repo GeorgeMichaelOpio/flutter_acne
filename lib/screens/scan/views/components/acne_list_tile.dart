@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ProductListTile extends StatelessWidget {
-  const ProductListTile({
+class AcneListTile extends StatelessWidget {
+  const AcneListTile({
     super.key,
     required this.svgSrc,
     required this.title,

@@ -3,8 +3,8 @@ import '/components/network_image_with_loader.dart';
 
 import '../../../../constants.dart';
 
-class ProductImages extends StatefulWidget {
-  const ProductImages({
+class AcneImages extends StatefulWidget {
+  const AcneImages({
     super.key,
     required this.images,
   });
@@ -12,10 +12,10 @@ class ProductImages extends StatefulWidget {
   final List<String> images;
 
   @override
-  State<ProductImages> createState() => _ProductImagesState();
+  State<AcneImages> createState() => _ProductImagesState();
 }
 
-class _ProductImagesState extends State<ProductImages> {
+class _ProductImagesState extends State<AcneImages> {
   late PageController _controller;
 
   int _currentPage = 0;

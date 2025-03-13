@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../constants.dart';
-import 'product_availability_tag.dart';
+import 'acne_availability_tag.dart';
 
 class ProductInfo extends StatelessWidget {
   const ProductInfo({
@@ -30,7 +30,7 @@ class ProductInfo extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 const Spacer(),
-                ProductAvailabilityTag(isAvailable: isAvailable),
+                AcneAvailabilityTag(isAvailable: isAvailable),
               ],
             ),
             const SizedBox(height: defaultPadding / 2),

@@ -5,8 +5,8 @@ import '/route/screen_export.dart';
 
 import '../../../../constants.dart';
 
-class PopularScans extends StatelessWidget {
-  const PopularScans({
+class RecentScans extends StatelessWidget {
+  const RecentScans({
     super.key,
   });
 
@@ -19,7 +19,7 @@ class PopularScans extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(defaultPadding),
           child: Text(
-            "Popular products",
+            "Recent Scans",
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
@@ -29,26 +29,24 @@ class PopularScans extends StatelessWidget {
           height: 220,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            // Find demoPopularScans on models/ProductModel.dart
-            itemCount: demoPopularScans.length,
+            // Find demoRecentScans on models/ScanModel.dart
+            itemCount: demoRecentScans.length,
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.only(
                 left: defaultPadding,
-                right:
-                    index == demoPopularScans.length - 1 ? defaultPadding : 0,
+                right: index == demoRecentScans.length - 1 ? defaultPadding : 0,
               ),
               child: ProductCard(
-                image: demoPopularScans[index].image,
-                brandName: demoPopularScans[index].brandName,
-                title: demoPopularScans[index].title,
-                dicountpercent: demoPopularScans[index].dicountpercent,
+                image: demoRecentScans[index].image,
+                brandName: demoRecentScans[index].brandName,
+                title: demoRecentScans[index].title,
+                dicountpercent: demoRecentScans[index].dicountpercent,
                 press: () {
                   Navigator.pushNamed(
                     context,
                     productDetailsScreenRoute,
                     arguments: {
                       'isProductAvailable': index.isEven,
-                      'showSaveButton': index.isEven,
                     },
                   );
                 },
