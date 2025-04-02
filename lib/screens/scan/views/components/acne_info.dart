@@ -6,13 +6,12 @@ import 'acne_availability_tag.dart';
 class ProductInfo extends StatelessWidget {
   const ProductInfo({
     super.key,
-    required this.title,
     required this.brand,
     required this.description,
     required this.isAvailable,
   });
 
-  final String title, brand, description;
+  final String brand, description;
   final bool isAvailable;
 
   @override
@@ -32,12 +31,6 @@ class ProductInfo extends StatelessWidget {
                 const Spacer(),
                 AcneAvailabilityTag(isAvailable: isAvailable),
               ],
-            ),
-            const SizedBox(height: defaultPadding / 2),
-            Text(
-              title,
-              maxLines: 2,
-              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: defaultPadding),
             Text(

@@ -2,7 +2,7 @@ export '/route/route_constants.dart';
 export '../screens/history/views/history_screen.dart';
 export '/screens/home/views/home_screen.dart';
 export '../screens/scan/views/acne_details_screen.dart';
-export '../screens/scan/views/scan_details_screen.dart';
+export '../screens/scan/views/scan_details_screen.dart' hide MarkdownScreen;
 
 export '/screens/preferences/views/preferences_screen.dart';
 export '/screens/profile/views/profile_screen.dart';

@@ -1,4 +1,4 @@
-import 'package:acne/components/Banner/L/banner_l.dart';
+import '/components/Banner/L/banner_l.dart';
 import 'package:flutter/material.dart';
 
 

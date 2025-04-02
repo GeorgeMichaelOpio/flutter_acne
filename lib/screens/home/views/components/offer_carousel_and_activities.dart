@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../constants.dart';
-import 'categories.dart';
+import 'activities.dart';
 import 'offers_carousel.dart';
 
 class OffersCarouselAndActivities extends StatelessWidget {
@@ -15,14 +15,14 @@ class OffersCarouselAndActivities extends StatelessWidget {
       children: [
         const OffersCarousel(),
         const SizedBox(height: defaultPadding / 2),
-        Padding(
-          padding: const EdgeInsets.all(defaultPadding),
-          child: Text(
-            "Activities",
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-        ),
-        const Activities(),
+        // Padding(
+        //   padding: const EdgeInsets.all(defaultPadding),
+        //   child: Text(
+        //     "Activities",
+        //     style: Theme.of(context).textTheme.titleSmall,
+        //   ),
+        // ),
+        //  const Activities(),
       ],
     );
   }

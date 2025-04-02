@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '/components/network_image_with_loader.dart';
 
@@ -12,10 +14,10 @@ class AcneImages extends StatefulWidget {
   final List<String> images;
 
   @override
-  State<AcneImages> createState() => _ProductImagesState();
+  State<AcneImages> createState() => _AcneImagesState();
 }
 
-class _ProductImagesState extends State<AcneImages> {
+class _AcneImagesState extends State<AcneImages> {
   late PageController _controller;
 
   int _currentPage = 0;
@@ -33,6 +35,10 @@ class _ProductImagesState extends State<AcneImages> {
     super.dispose();
   }
 
+  bool isUrl(String path) {
+    return Uri.tryParse(path)?.hasScheme ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -48,15 +54,21 @@ class _ProductImagesState extends State<AcneImages> {
                 });
               },
               itemCount: widget.images.length,
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.only(right: defaultPadding),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(defaultBorderRadious * 2),
+              itemBuilder: (context, index) {
+                final imagePath = widget.images[index];
+
+                return Padding(
+                  padding: const EdgeInsets.only(right: defaultPadding),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(defaultBorderRadious * 2),
+                    ),
+                    child: isUrl(imagePath)
+                        ? NetworkImageWithLoader(imagePath)
+                        : Image.file(File(imagePath), fit: BoxFit.cover),
                   ),
-                  child: NetworkImageWithLoader(widget.images[index]),
-                ),
-              ),
+                );
+              },
             ),
             if (widget.images.length > 1)
               Positioned(

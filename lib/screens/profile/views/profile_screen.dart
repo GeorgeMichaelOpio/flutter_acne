@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
-import '../../../components/list_tile/divider_list_tile.dart';
-import '../../../components/network_image_with_loader.dart';
 import '../../../constants.dart';
 import '../../../route/screen_export.dart';
 import 'components/profile_card.dart';
 import 'components/profile_menu_item_list_tile.dart';
-
 import '../../../auth_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -23,9 +19,10 @@ class ProfileScreen extends StatelessWidget {
       body: ListView(
         children: [
           ProfileCard(
-            name: (user?.displayName?.split(' ').last) ?? 'Not available',
+            name: capitalize(authProvider.userName ?? 'Unknown'),
             email: user?.email ?? 'Not available',
-            imageSrc: user!.photoURL ?? 'default_image_url',
+            imageSrc: authProvider.profileImageUrl ??
+                'assets/images/default_profile.png',
             press: () {
               Navigator.pushNamed(context, userInfoScreenRoute);
             },
@@ -39,7 +36,6 @@ class ProfileScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
-
           ProfileMenuListTile(
             text: "Preferences",
             svgSrc: "assets/icons/Preferences.svg",
@@ -61,7 +57,6 @@ class ProfileScreen extends StatelessWidget {
             svgSrc: "assets/icons/Language.svg",
             press: () {},
           ),
-
           const SizedBox(height: defaultPadding),
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -83,12 +78,14 @@ class ProfileScreen extends StatelessWidget {
             isShowDivider: false,
           ),
           const SizedBox(height: defaultPadding),
-
-          // Log Out
           ListTile(
             onTap: () {
               authProvider.signOut();
-              Navigator.pushNamed(context, logInScreenRoute);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (Route<dynamic> route) => false,
+              );
             },
             minLeadingWidth: 24,
             leading: SvgPicture.asset(
@@ -109,4 +106,11 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String capitalize(String text) {
+  if (text.isEmpty) {
+    return text;
+  }
+  return text[0].toUpperCase() + text.substring(1);
 }

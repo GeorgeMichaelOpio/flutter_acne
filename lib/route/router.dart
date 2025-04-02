@@ -24,21 +24,21 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case productDetailsScreenRoute:
       final args = settings.arguments as Map<String, dynamic>? ?? {};
-      bool isProductAvailable = args['isProductAvailable'] ?? true;
+      Map<String, dynamic>? scanData = args['scanData'];
       return MaterialPageRoute(
         builder: (context) {
           return AcneDetailsScreen(
-            isProductAvailable: isProductAvailable,
+            scanData: scanData,
           );
         },
       );
     case scanDetailsScreenRoute:
-      final args = settings.arguments as Map<String, dynamic>? ?? {};
-      bool isProductAvailable = args['isProductAvailable'] ?? true;
       return MaterialPageRoute(
         builder: (context) {
+          final args = settings.arguments as Map<String, dynamic>;
           return ScanDetailsScreen(
-            isProductAvailable: isProductAvailable,
+            scanData: args['scanData'],
+            imagePath: args['imagePath'],
           );
         },
       );
@@ -60,7 +60,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
     case userInfoScreenRoute:
       return MaterialPageRoute(
-        builder: (context) => const UserInfoScreen(),
+        builder: (context) => UserInfoScreen(),
       );
     case preferencesScreenRoute:
       return MaterialPageRoute(

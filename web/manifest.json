@@ -1,6 +1,6 @@
 {
-    "name": "acne",
-    "short_name": "acne",
+    "name": "acne_supabase",
+    "short_name": "acne_supabase",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

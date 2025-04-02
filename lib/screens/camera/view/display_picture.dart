@@ -1,14 +1,115 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
-import 'package:acne/route/screen_export.dart';
+import '/route/screen_export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class DisplayPictureScreen extends StatelessWidget {
+class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
 
   const DisplayPictureScreen({super.key, required this.imagePath});
+
+  @override
+  State<DisplayPictureScreen> createState() => _DisplayPictureScreenState();
+}
+
+class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
+  bool _isLoading = false;
+  String? _error;
+
+  Future<void> _analyzeSkin() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      // Create multipart request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://acne-api.onrender.com/predict'),
+      );
+
+      // Add the file to the request
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        widget.imagePath,
+      ));
+
+      // Send the request
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonResponse = json.decode(responseData);
+        Map<String, dynamic> result = {
+          'fileInfo': jsonResponse[0],
+          'prediction': jsonResponse[1],
+          'spots': jsonResponse[2],
+          'report': jsonResponse[3],
+        };
+
+        print(result);
+
+        // Navigate to ScanDetailsScreen with the result data
+        Navigator.pushNamed(
+          context,
+          scanDetailsScreenRoute,
+          arguments: {
+            'scanData': result,
+            'imagePath': widget.imagePath,
+          },
+        );
+      } else {
+        setState(() {
+          _error = 'Error: ${response.statusCode}';
+        });
+        _showErrorSnackBar('Failed to analyze image. Please try again.');
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Exception: $e';
+        _isLoading = false;
+      });
+      _showErrorSnackBar(
+          'Could not connect to the analysis server. Please check your connection and try again.');
+    }
+  }
+
+  void _showErrorSnackBar(String error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error, color: Colors.white),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                error,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        duration: const Duration(seconds: 3),
+        elevation: 6,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +130,7 @@ class DisplayPictureScreen extends StatelessWidget {
           ImageFiltered(
             imageFilter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Image.file(
-              File(imagePath),
+              File(widget.imagePath),
               fit: BoxFit.cover,
             ),
           ),
@@ -53,7 +154,7 @@ class DisplayPictureScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Image.file(
-                  File(imagePath),
+                  File(widget.imagePath),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -100,30 +201,32 @@ class DisplayPictureScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      scanDetailsScreenRoute,
-                      arguments: {
-                        'isProductAvailable': Random().nextInt(9).isEven,
-                      },
-                    );
-                  },
+                  onTap: _isLoading ? null : _analyzeSkin,
                   child: Container(
-                    padding: const EdgeInsets.all(
-                        16), // Adjust to match desired size
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.black.withOpacity(0.4),
+                      color: _isLoading
+                          ? Colors.grey.withOpacity(0.4)
+                          : Colors.black.withOpacity(0.4),
                     ),
-                    child: SvgPicture.asset(
-                      "assets/icons/scan.svg",
-                      height: 40,
-                      colorFilter: ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcIn,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 40,
+                            width: 40,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : SvgPicture.asset(
+                            "assets/icons/scan.svg",
+                            height: 40,
+                            colorFilter: ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
                   ),
                 ),
               ],

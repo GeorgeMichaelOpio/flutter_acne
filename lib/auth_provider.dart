@@ -1,171 +1,276 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final SupabaseClient _supabase = Supabase.instance.client;
+  late final GoogleSignIn _googleSignIn;
+
   User? _user;
-  bool _isLoading = false;
+  bool _isLoading = true;
   String _error = '';
-  bool _initialCheckCompleted = false;
+  String? _userName;
+  String? _profileImageUrl;
+  StreamSubscription<AuthState>? _authSubscription;
 
   User? get user => _user;
   bool get isAuthenticated => _user != null;
   bool get isLoading => _isLoading;
   String get error => _error;
-  bool get initialCheckCompleted => _initialCheckCompleted;
+  String? get userName => _userName;
+  String? get profileImageUrl => _profileImageUrl;
 
   AuthProvider() {
-    _user = _auth.currentUser;
-    _auth.authStateChanges().listen((User? user) async {
-      _user = user;
-      await _persistAuthState();
+    _googleSignIn = GoogleSignIn(
+      clientId: Platform.isIOS
+          ? '450394743637-m69sc4rp5sgs631889a7n3i57c6098ta.apps.googleusercontent.com'
+          : null,
+      serverClientId:
+          '450394743637-pp24b6thgujj74mmta30gqem2ok24lct.apps.googleusercontent.com',
+      scopes: ['email', 'profile'],
+    );
+
+    _authSubscription = _supabase.auth.onAuthStateChange.listen((data) async {
+      final AuthChangeEvent event = data.event;
+      if (event == AuthChangeEvent.initialSession ||
+          event == AuthChangeEvent.signedIn) {
+        _user = data.session?.user;
+        _isLoading = false;
+
+        if (_user != null) {
+          await _fetchProfileData();
+        }
+      } else if (event == AuthChangeEvent.signedOut) {
+        _user = null;
+        _userName = null;
+        _profileImageUrl = null;
+        _isLoading = false;
+      }
       notifyListeners();
     });
-    _checkPersistedAuth();
   }
 
-  Future<void> _checkPersistedAuth() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final persistedAuth = prefs.getBool('isAuthenticated') ?? false;
+  Future<bool> updateProfile({
+    String? name,
+    File? avatarFile,
+  }) async {
+    if (user == null) return false;
 
-      if (persistedAuth && _user == null) {
-        // Attempt silent sign-in
-        await _trySilentSignIn();
+    try {
+      String? avatarUrl;
+
+      // Upload new avatar if provided
+      if (avatarFile != null) {
+        final fileExt = avatarFile.path.split('.').last;
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExt';
+        final filePath = '${user!.id}/$fileName';
+
+        await _supabase.storage.from('avatars').upload(
+              filePath,
+              avatarFile,
+              fileOptions:
+                  const FileOptions(cacheControl: '3600', upsert: true),
+            );
+
+        avatarUrl = _supabase.storage.from('avatars').getPublicUrl(filePath);
       }
-    } finally {
-      _initialCheckCompleted = true;
+
+      // Update profile
+      await _supabase.from('profiles').upsert({
+        'id': user!.id,
+        'username': name ?? userName,
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+
+      // Update local state
+      if (name != null) _userName = name;
+      if (avatarUrl != null) _profileImageUrl = avatarUrl;
+
       notifyListeners();
-    }
-  }
-
-  Future<void> _trySilentSignIn() async {
-    try {
-      // Try Google silent sign-in first
-      final googleUser = await _googleSignIn.signInSilently();
-      if (googleUser != null) {
-        await _handleGoogleSignIn(googleUser);
-        return;
-      }
-
-      // Add other silent sign-in methods here if needed
+      return true;
     } catch (e) {
-      _error = 'Automatic sign-in failed: ${e.toString()}';
+      _setError('Failed to update profile: $e');
+      return false;
     }
   }
 
-  Future<void> _persistAuthState() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isAuthenticated', _user != null);
-  }
-
-  Future<bool> signInWithEmailAndPassword(String email, String password) async {
-    _isLoading = true;
-    _error = '';
-    notifyListeners();
+  Future<void> _fetchProfileData() async {
+    if (_user == null) return;
 
     try {
-      await _auth.signInWithEmailAndPassword(
+      final response = await _supabase
+          .from('profiles')
+          .select('username, avatar_url')
+          .eq('id', _user!.id)
+          .maybeSingle();
+
+      if (response != null) {
+        _userName = response['username'] as String?;
+        _profileImageUrl = response['avatar_url'] as String?;
+      } else {
+        // Create a new profile if one doesn't exist
+        await _createInitialProfile();
+      }
+    } catch (e) {
+      _userName = _user?.email?.split('@').first;
+      _profileImageUrl = null;
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> _createInitialProfile() async {
+    if (_user == null) return;
+
+    try {
+      await _supabase.from('profiles').upsert({
+        'id': _user!.id,
+        'username': _user?.email?.split('@').first,
+        'avatar_url': null,
+      });
+
+      // Refresh profile data
+      await _fetchProfileData();
+    } catch (e) {
+      _setError('Failed to create profile');
+    }
+  }
+
+  Future<bool> signInWithEmail(String email, String password) async {
+    _setLoading(true);
+    _setError('');
+
+    try {
+      final response = await _supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
-      await _persistAuthState();
+      _user = response.user;
+      await _fetchProfileData();
       return true;
     } catch (e) {
-      _error = _parseFirebaseError(e);
+      _setError(_parseAuthError(e));
       return false;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
-  Future<bool> registerWithEmailAndPassword(
-      String email, String password) async {
-    _isLoading = true;
-    _error = '';
-    notifyListeners();
+  Future<bool> registerWithEmail(String email, String password) async {
+    _setLoading(true);
+    _setError('');
 
     try {
-      await _auth.createUserWithEmailAndPassword(
+      final response = await _supabase.auth.signUp(
         email: email,
         password: password,
       );
-      await _persistAuthState();
+      _user = response.user;
+
+      // Create profile after successful registration
+      if (_user != null) {
+        await _createInitialProfile();
+      }
+
       return true;
     } catch (e) {
-      _error = _parseFirebaseError(e);
+      _setError(_parseAuthError(e));
       return false;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
   Future<bool> signInWithGoogle() async {
-    _isLoading = true;
-    _error = '';
-    notifyListeners();
+    _setLoading(true);
+    _setError('');
 
     try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        await _handleGoogleSignIn(googleSignInAccount);
-        return true;
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        _setError('Google sign in was cancelled');
+        return false;
       }
-      return false;
+
+      final googleAuth = await googleUser.authentication;
+      if (googleAuth.idToken == null) {
+        throw 'No ID Token found from Google';
+      }
+
+      await _supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: googleAuth.idToken!,
+        accessToken: googleAuth.accessToken,
+      );
+
+      _user = _supabase.auth.currentUser;
+      await _fetchProfileData();
+      return true;
     } catch (e) {
-      _error = _parseFirebaseError(e);
+      _setError(_parseAuthError(e));
       return false;
     } finally {
-      _isLoading = false;
+      _setLoading(false);
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await Future.wait([
+        _supabase.auth.signOut(),
+        _googleSignIn.signOut(),
+      ]);
+      _user = null;
+      _userName = null;
+      _profileImageUrl = null;
+    } catch (e) {
+      _setError(_parseAuthError(e));
+    } finally {
       notifyListeners();
     }
   }
 
-  Future<void> _handleGoogleSignIn(
-      GoogleSignInAccount googleSignInAccount) async {
-    final GoogleSignInAuthentication googleAuth =
-        await googleSignInAccount.authentication;
-
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    await _auth.signInWithCredential(credential);
-    await _persistAuthState();
-  }
-
-  Future<void> signOut() async {
-    await _auth.signOut();
-    await _googleSignIn.signOut();
-    await _persistAuthState();
-    _user = null;
+  void _setLoading(bool loading) {
+    _isLoading = loading;
     notifyListeners();
   }
 
-  String _parseFirebaseError(dynamic error) {
-    if (error is FirebaseAuthException) {
-      switch (error.code) {
-        case 'user-not-found':
-          return 'No user found with this email';
-        case 'wrong-password':
-          return 'Incorrect password';
-        case 'email-already-in-use':
+  void _setError(String error) {
+    _error = error;
+    notifyListeners();
+  }
+
+  void clearError() {
+    _error = '';
+    notifyListeners();
+  }
+
+  String _parseAuthError(dynamic error) {
+    if (error is AuthException) {
+      switch (error.message) {
+        case 'Invalid login credentials':
+          return 'Invalid email or password';
+        case 'User already registered':
           return 'This email is already registered';
-        case 'weak-password':
-          return 'Password is too weak';
-        case 'invalid-email':
-          return 'Invalid email address';
+        case 'Email not confirmed':
+          return 'Please verify your email first';
+        case 'Password should be at least 6 characters':
+          return 'Password must be at least 6 characters';
         default:
-          return error.message ?? 'Authentication failed';
+          return "Check your internet connection and try again";
       }
     }
     return error.toString();
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    _googleSignIn.disconnect();
+    super.dispose();
   }
 }
