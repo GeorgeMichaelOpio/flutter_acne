@@ -1,0 +1,1 @@
+/home/michael/Desktop/flutter/flutter_acne/build/app/intermediates/cxx/RelWithDebInfo/216re40z/obj/armeabi-v7a
