@@ -1,4 +1,4 @@
-# acne_supabase
+# acne_app
 
 A new Flutter project.
 
