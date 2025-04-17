@@ -1,6 +1,6 @@
 {
-    "name": "acne_supabase",
-    "short_name": "acne_supabase",
+    "name": "acne_app",
+    "short_name": "acne_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
