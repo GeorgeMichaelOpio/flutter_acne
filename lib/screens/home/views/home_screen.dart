@@ -15,11 +15,7 @@ class HomeScreen extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(child: OffersCarouselAndActivities()),
-            SliverToBoxAdapter(
-              child: SpotsChart(
-                scans: Provider.of<ScanProvider>(context, listen: false).scans,
-              ),
-            ),
+
             const SliverToBoxAdapter(child: RecentScans()),
           ],
         ),

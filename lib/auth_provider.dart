@@ -25,9 +25,10 @@ class AuthProvider with ChangeNotifier {
 
   AuthProvider() {
     _googleSignIn = GoogleSignIn(
-      clientId: Platform.isIOS
-          ? '450394743637-m69sc4rp5sgs631889a7n3i57c6098ta.apps.googleusercontent.com'
-          : null,
+      clientId:
+          Platform.isIOS
+              ? '450394743637-m69sc4rp5sgs631889a7n3i57c6098ta.apps.googleusercontent.com'
+              : null,
       serverClientId:
           '450394743637-pp24b6thgujj74mmta30gqem2ok24lct.apps.googleusercontent.com',
       scopes: ['email', 'profile'],
@@ -53,10 +54,7 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
-  Future<bool> updateProfile({
-    String? name,
-    File? avatarFile,
-  }) async {
+  Future<bool> updateProfile({String? name, File? avatarFile}) async {
     if (user == null) return false;
 
     try {
@@ -68,11 +66,15 @@ class AuthProvider with ChangeNotifier {
         final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExt';
         final filePath = '${user!.id}/$fileName';
 
-        await _supabase.storage.from('avatars').upload(
+        await _supabase.storage
+            .from('avatars')
+            .upload(
               filePath,
               avatarFile,
-              fileOptions:
-                  const FileOptions(cacheControl: '3600', upsert: true),
+              fileOptions: const FileOptions(
+                cacheControl: '3600',
+                upsert: true,
+              ),
             );
 
         avatarUrl = _supabase.storage.from('avatars').getPublicUrl(filePath);
@@ -102,11 +104,12 @@ class AuthProvider with ChangeNotifier {
     if (_user == null) return;
 
     try {
-      final response = await _supabase
-          .from('profiles')
-          .select('username, avatar_url')
-          .eq('id', _user!.id)
-          .maybeSingle();
+      final response =
+          await _supabase
+              .from('profiles')
+              .select('username, avatar_url')
+              .eq('id', _user!.id)
+              .maybeSingle();
 
       if (response != null) {
         _userName = response['username'] as String?;
@@ -220,10 +223,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     try {
-      await Future.wait([
-        _supabase.auth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await Future.wait([_supabase.auth.signOut(), _googleSignIn.signOut()]);
       _user = null;
       _userName = null;
       _profileImageUrl = null;
@@ -251,20 +251,23 @@ class AuthProvider with ChangeNotifier {
 
   String _parseAuthError(dynamic error) {
     if (error is AuthException) {
-      switch (error.message) {
+      final message = error.message.trim();
+
+      switch (message) {
         case 'Invalid login credentials':
           return 'Invalid email or password';
         case 'User already registered':
           return 'This email is already registered';
         case 'Email not confirmed':
-          return 'Please verify your email first';
+          return 'Please check your email to confirm your account before you can log in';
         case 'Password should be at least 6 characters':
           return 'Password must be at least 6 characters';
         default:
-          return "Check your internet connection and try again";
+          return message;
       }
     }
-    return error.toString();
+
+    return error?.toString() ?? 'An unknown error occurred';
   }
 
   @override
