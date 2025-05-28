@@ -10,3 +10,5 @@ const String userInfoScreenRoute = "user_info";
 const String preferencesScreenRoute = "preferences";
 const String cameraScreenRoute = "camera";
 const String scanDetailsScreenRoute = "scan_details";
+const String FAQsScreenRoute = "faq";
+const String AcneDetectionHelpScreenRoute = "acne_detection_help";

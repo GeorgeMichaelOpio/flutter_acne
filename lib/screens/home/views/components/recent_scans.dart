@@ -10,9 +10,7 @@ import '../../../../constants.dart';
 // Import your ScanProvider
 
 class RecentScans extends StatefulWidget {
-  const RecentScans({
-    super.key,
-  });
+  const RecentScans({super.key});
 
   @override
   State<RecentScans> createState() => _RecentScansState();
@@ -65,43 +63,51 @@ class _RecentScansState extends State<RecentScans> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: scanProvider.scans.length,
-              itemBuilder: (context, index) => Padding(
-                padding: EdgeInsets.only(
-                  left: defaultPadding,
-                  right: index == scanProvider.scans.length - 1
-                      ? defaultPadding
-                      : 0,
-                ),
-                child: ProductCard(
-                  image: scanProvider.scans[index].scannedImageUrl,
-                  brandName: DateFormat('yyyy-MM-dd')
-                      .format(scanProvider.scans[index].createdAt),
-                  title:
-                      jsonDecode(scanProvider.scans[index].prediction)['label'],
-                  spots: scanProvider.scans[index].spots,
-                  press: () {
-                    Navigator.pushNamed(
-                      context,
-                      productDetailsScreenRoute,
-                      arguments: {
-                        'scanData': {
-                          'id': scanProvider.scans[index].id,
-                          'fileInfo': {
-                            'url1': scanProvider.scans[index].originalImageUrl,
-                            'url2': scanProvider.scans[index].scannedImageUrl
+              itemBuilder:
+                  (context, index) => Padding(
+                    padding: EdgeInsets.only(
+                      left: defaultPadding,
+                      right:
+                          index == scanProvider.scans.length - 1
+                              ? defaultPadding
+                              : 0,
+                    ),
+                    child: ProductCard(
+                      image: scanProvider.scans[index].originalImageUrl,
+                      brandName: DateFormat(
+                        'yyyy-MM-dd',
+                      ).format(scanProvider.scans[index].createdAt),
+                      title:
+                          jsonDecode(
+                            scanProvider.scans[index].prediction,
+                          )['label'],
+                      //spots: scanProvider.scans[index].spots,
+                      press: () {
+                        Navigator.pushNamed(
+                          context,
+                          productDetailsScreenRoute,
+                          arguments: {
+                            'scanData': {
+                              'id': scanProvider.scans[index].id,
+                              'fileInfo': {
+                                'url1':
+                                    scanProvider.scans[index].originalImageUrl,
+                                'url2':
+                                    scanProvider.scans[index].scannedImageUrl,
+                              },
+                              'prediction': jsonDecode(
+                                scanProvider.scans[index].prediction,
+                              ),
+                              'spots': scanProvider.scans[index].spots,
+                              'report': scanProvider.scans[index].report,
+                            },
                           },
-                          'prediction':
-                              jsonDecode(scanProvider.scans[index].prediction),
-                          'spots': scanProvider.scans[index].spots,
-                          'report': scanProvider.scans[index].report,
-                        },
+                        );
                       },
-                    );
-                  },
-                ),
-              ),
+                    ),
+                  ),
             ),
-          )
+          ),
       ],
     );
   }
@@ -114,9 +120,7 @@ class _LoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 220,
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }
@@ -182,25 +186,21 @@ class _EmptyScansWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            Icons.folder_off,
-            size: 60,
-            color: Colors.grey.shade400,
-          ),
+          Icon(Icons.folder_off, size: 60, color: Colors.grey.shade400),
           const SizedBox(height: 16),
           Text(
             'No scans found',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade700,
-                ),
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'Start a new scan to see results here.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey.shade500,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
             textAlign: TextAlign.center,
           ),
         ],

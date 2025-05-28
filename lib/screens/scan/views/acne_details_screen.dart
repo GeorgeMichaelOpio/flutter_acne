@@ -28,16 +28,17 @@ class AcneDetailsScreen extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => PopScope(
-        canPop: false,
-        child: Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Center(
-            child: Lottie.asset('assets/animations/loading.json'),
+      builder:
+          (context) => PopScope(
+            canPop: false,
+            child: Dialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              child: Center(
+                child: Lottie.asset('assets/animations/loading.json'),
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -62,9 +63,7 @@ class AcneDetailsScreen extends StatelessWidget {
         backgroundColor: Colors.redAccent,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         duration: const Duration(seconds: 3),
         elevation: 6,
       ),
@@ -92,9 +91,7 @@ class AcneDetailsScreen extends StatelessWidget {
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         duration: const Duration(seconds: 3),
         elevation: 6,
       ),
@@ -147,20 +144,19 @@ class AcneDetailsScreen extends StatelessWidget {
                 Text(
                   'Delete Scan',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                    fontWeight: FontWeight.w800,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   'This will permanently remove the scan. You cannot undo this action.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.7),
-                      ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.7),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -179,12 +175,11 @@ class AcneDetailsScreen extends StatelessWidget {
                         ),
                         child: Text(
                           'Cancel',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
                     ),
@@ -204,11 +199,12 @@ class AcneDetailsScreen extends StatelessWidget {
                         ),
                         child: Text(
                           'Delete',
-                          style:
-                              Theme.of(context).textTheme.labelLarge?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -224,8 +220,10 @@ class AcneDetailsScreen extends StatelessWidget {
       // Show loading dialog
       _showLoadingDialog(context);
 
-      final success =
-          await scanProvider.deleteScan(scanId, authProvider.user!.id);
+      final success = await scanProvider.deleteScan(
+        scanId,
+        authProvider.user!.id,
+      );
 
       // Close loading dialog
       Navigator.of(context, rootNavigator: true).pop();
@@ -241,7 +239,9 @@ class AcneDetailsScreen extends StatelessWidget {
       // Close loading dialog if open
       Navigator.of(context, rootNavigator: true).pop();
       _showErrorSnackBar(
-          context, 'An unexpected error occurred: ${e.toString()}');
+        context,
+        'An unexpected error occurred: ${e.toString()}',
+      );
     }
   }
 
@@ -279,15 +279,14 @@ class AcneDetailsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            AcneImages(
-              images: spots > 0 ? [imageUrl1, imageUrl2] : [imageUrl1],
-            ),
+            AcneImages(images: [imageUrl1]),
             ProductInfo(
               brand: DateFormat('yyyy-MM-dd').format(DateTime.now().toUtc()),
               isAvailable: spots > 0 ? isProductAvailable : false,
-              description: spots > 0
-                  ? "Based on the image provided,${prediction['label']} was found"
-                  : "Base on the image provide detected acne was not found",
+              description:
+                  spots > 0
+                      ? "Based on the image provided,${prediction['label']} was found"
+                      : "Base on the image provide detected acne was not found",
             ),
             if (spots > 0) ...[
               AcneListTile(
@@ -301,11 +300,9 @@ class AcneDetailsScreen extends StatelessWidget {
                     ),
                   );
                 },
-              )
+              ),
             ],
-            const SliverToBoxAdapter(
-              child: SizedBox(height: defaultPadding),
-            )
+            const SliverToBoxAdapter(child: SizedBox(height: defaultPadding)),
           ],
         ),
       ),
@@ -321,9 +318,7 @@ class MarkdownScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Scan Details'),
-      ),
+      appBar: AppBar(title: Text('Scan Details')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(

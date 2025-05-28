@@ -66,6 +66,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const PreferencesScreen(),
       );
+    case FAQsScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const FAQScreen(),
+      );
+     case AcneDetectionHelpScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const AcneDetectionHelpScreen(),
+      );
     default:
       return MaterialPageRoute(
         // Make a screen for undefine

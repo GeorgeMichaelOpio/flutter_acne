@@ -21,7 +21,8 @@ class ProfileScreen extends StatelessWidget {
           ProfileCard(
             name: capitalize(authProvider.userName ?? 'Unknown'),
             email: user?.email ?? 'Not available',
-            imageSrc: authProvider.profileImageUrl ??
+            imageSrc:
+                authProvider.profileImageUrl ??
                 'assets/images/default_profile.png',
             press: () {
               Navigator.pushNamed(context, userInfoScreenRoute);
@@ -30,7 +31,9 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: defaultPadding),
           Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: defaultPadding, vertical: defaultPadding / 2),
+              horizontal: defaultPadding,
+              vertical: defaultPadding / 2,
+            ),
             child: Text(
               "Location",
               style: Theme.of(context).textTheme.titleSmall,
@@ -43,24 +46,13 @@ class ProfileScreen extends StatelessWidget {
               Navigator.pushNamed(context, preferencesScreenRoute);
             },
           ),
+
           const SizedBox(height: defaultPadding),
           Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: defaultPadding, vertical: defaultPadding / 2),
-            child: Text(
-              "Settings",
-              style: Theme.of(context).textTheme.titleSmall,
+              horizontal: defaultPadding,
+              vertical: defaultPadding / 2,
             ),
-          ),
-          ProfileMenuListTile(
-            text: "Language",
-            svgSrc: "assets/icons/Language.svg",
-            press: () {},
-          ),
-          const SizedBox(height: defaultPadding),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: defaultPadding, vertical: defaultPadding / 2),
             child: Text(
               "Help & Support",
               style: Theme.of(context).textTheme.titleSmall,
@@ -69,12 +61,16 @@ class ProfileScreen extends StatelessWidget {
           ProfileMenuListTile(
             text: "Get Help",
             svgSrc: "assets/icons/Help.svg",
-            press: () {},
+            press: () {
+              Navigator.pushNamed(context, AcneDetectionHelpScreenRoute);
+            },
           ),
           ProfileMenuListTile(
             text: "FAQ",
             svgSrc: "assets/icons/FAQ.svg",
-            press: () {},
+            press: () {
+              Navigator.pushNamed(context, FAQsScreenRoute);
+            },
             isShowDivider: false,
           ),
           const SizedBox(height: defaultPadding),
@@ -92,16 +88,13 @@ class ProfileScreen extends StatelessWidget {
               "assets/icons/Logout.svg",
               height: 24,
               width: 24,
-              colorFilter: const ColorFilter.mode(
-                errorColor,
-                BlendMode.srcIn,
-              ),
+              colorFilter: const ColorFilter.mode(errorColor, BlendMode.srcIn),
             ),
             title: const Text(
               "Log Out",
               style: TextStyle(color: errorColor, fontSize: 14, height: 1),
             ),
-          )
+          ),
         ],
       ),
     );

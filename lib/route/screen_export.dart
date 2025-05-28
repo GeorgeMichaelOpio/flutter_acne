@@ -12,3 +12,7 @@ export '/screens/login/login_screen.dart';
 export '/screens/signup/register_screen.dart';
 export '/entry_point.dart';
 export '/screens/camera/view/camera_view.dart';
+
+export '/screens/faq/views/faq_screen.dart';
+export '/screens/gethelp/views/gethelp_screen.dart';
+

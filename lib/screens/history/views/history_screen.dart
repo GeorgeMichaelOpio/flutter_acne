@@ -45,20 +45,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
               "Network error. Please check your internet connection")
             SliverFillRemaining(
               child: _ErrorWidget(
-                  error:
-                      "Network error. Please check your internet connection"),
+                error: "Network error. Please check your internet connection",
+              ),
             ),
           if (scanProvider.error == "No scans found for this user")
-            SliverFillRemaining(
-              child: _EmptyScansWidget(),
-            ),
+            SliverFillRemaining(child: _EmptyScansWidget()),
           if (!scanProvider.isLoading &&
               scanProvider.scans.isEmpty &&
               scanProvider.error.isEmpty)
             const SliverFillRemaining(
-              child: Center(
-                child: Text('No scan history found'),
-              ),
+              child: Center(child: Text('No scan history found')),
             ),
           if (scanProvider.scans.isNotEmpty)
             SliverPadding(
@@ -73,40 +69,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   crossAxisSpacing: defaultPadding,
                   childAspectRatio: 0.66,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return ProductCard(
-                      image: scanProvider.scans[index].scannedImageUrl,
-                      brandName: DateFormat('yyyy-MM-dd')
-                          .format(scanProvider.scans[index].createdAt),
-                      title: jsonDecode(
-                          scanProvider.scans[index].prediction)['label'],
-                      spots: scanProvider.scans[index].spots,
-                      press: () {
-                        Navigator.pushNamed(
-                          context,
-                          productDetailsScreenRoute,
-                          arguments: {
-                            'scanData': {
-                              'id': scanProvider.scans[index].id,
-                              'fileInfo': {
-                                'url1':
-                                    scanProvider.scans[index].originalImageUrl,
-                                'url2':
-                                    scanProvider.scans[index].scannedImageUrl
-                              },
-                              'prediction': jsonDecode(
-                                  scanProvider.scans[index].prediction),
-                              'spots': scanProvider.scans[index].spots,
-                              'report': scanProvider.scans[index].report,
+                delegate: SliverChildBuilderDelegate((
+                  BuildContext context,
+                  int index,
+                ) {
+                  return ProductCard(
+                    image: scanProvider.scans[index].originalImageUrl,
+                    brandName: DateFormat(
+                      'yyyy-MM-dd',
+                    ).format(scanProvider.scans[index].createdAt),
+                    title:
+                        jsonDecode(
+                          scanProvider.scans[index].prediction,
+                        )['label'],
+                    //spots: scanProvider.scans[index].spots,
+                    press: () {
+                      Navigator.pushNamed(
+                        context,
+                        productDetailsScreenRoute,
+                        arguments: {
+                          'scanData': {
+                            'id': scanProvider.scans[index].id,
+                            'fileInfo': {
+                              'url1':
+                                  scanProvider.scans[index].originalImageUrl,
+                              'url2': scanProvider.scans[index].scannedImageUrl,
                             },
+                            'prediction': jsonDecode(
+                              scanProvider.scans[index].prediction,
+                            ),
+                            'spots': scanProvider.scans[index].spots,
+                            'report': scanProvider.scans[index].report,
                           },
-                        );
-                      },
-                    );
-                  },
-                  childCount: scanProvider.scans.length,
-                ),
+                        },
+                      );
+                    },
+                  );
+                }, childCount: scanProvider.scans.length),
               ),
             ),
         ],
@@ -176,25 +175,21 @@ class _EmptyScansWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.folder_off,
-            size: 60,
-            color: Colors.grey.shade400,
-          ),
+          Icon(Icons.folder_off, size: 60, color: Colors.grey.shade400),
           const SizedBox(height: 16),
           Text(
             'No scans found',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade700,
-                ),
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'Start a new scan to see results here.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey.shade500,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
             textAlign: TextAlign.center,
           ),
         ],

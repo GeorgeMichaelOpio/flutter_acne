@@ -34,16 +34,17 @@ class ScanDetailsScreen extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => PopScope(
-        canPop: false,
-        child: Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Center(
-            child: Lottie.asset('assets/animations/loading.json'),
+      builder:
+          (context) => PopScope(
+            canPop: false,
+            child: Dialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              child: Center(
+                child: Lottie.asset('assets/animations/loading.json'),
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -58,8 +59,10 @@ class ScanDetailsScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 error,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
@@ -67,9 +70,7 @@ class ScanDetailsScreen extends StatelessWidget {
         backgroundColor: Colors.redAccent,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         duration: const Duration(seconds: 3),
         elevation: 6,
       ),
@@ -87,8 +88,10 @@ class ScanDetailsScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 message,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
@@ -96,9 +99,7 @@ class ScanDetailsScreen extends StatelessWidget {
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         duration: const Duration(seconds: 3),
         elevation: 6,
       ),
@@ -170,16 +171,19 @@ class ScanDetailsScreen extends StatelessWidget {
         // If the scanned image is a URL, download it first
         if (scanData!['fileInfo']['url'].startsWith('http')) {
           // Download the image first
-          final downloadedPath =
-              await _downloadImage(scanData!['fileInfo']['url']);
+          final downloadedPath = await _downloadImage(
+            scanData!['fileInfo']['url'],
+          );
           // Then upload to Supabase
           scannedImageUrl = await _uploadImageToStorage(downloadedPath, userId);
           // Delete the temporary file
           await File(downloadedPath).delete();
         } else {
           // It's a local file, upload directly
-          scannedImageUrl =
-              await _uploadImageToStorage(scanData!['fileInfo']['url'], userId);
+          scannedImageUrl = await _uploadImageToStorage(
+            scanData!['fileInfo']['url'],
+            userId,
+          );
         }
       }
 
@@ -237,10 +241,14 @@ class ScanDetailsScreen extends StatelessWidget {
               floating: true,
               actions: [
                 IconButton(
-                  onPressed: () => {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, 'entry_point', (route) => false),
-                  },
+                  onPressed:
+                      () => {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          'entry_point',
+                          (route) => false,
+                        ),
+                      },
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   icon: SizedBox(
@@ -269,15 +277,14 @@ class ScanDetailsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            AcneImages(
-              images: spots > 0 ? [imagePath, imageUrl] : [imagePath],
-            ),
+            AcneImages(images: [imagePath]),
             ProductInfo(
               brand: DateFormat('yyyy-MM-dd').format(DateTime.now().toUtc()),
               isAvailable: spots > 0 ? isProductAvailable : false,
-              description: spots > 0
-                  ? "Based on the image provided, ${prediction['label']} was found"
-                  : "Based on the image provided, no acne was detected",
+              description:
+                  spots > 0
+                      ? "Based on the image provided, ${prediction['label']} was found"
+                      : "Based on the image provided, no acne was detected",
             ),
             if (spots > 0) ...[
               AcneListTile(
@@ -291,11 +298,9 @@ class ScanDetailsScreen extends StatelessWidget {
                     ),
                   );
                 },
-              )
+              ),
             ],
-            const SliverToBoxAdapter(
-              child: SizedBox(height: defaultPadding),
-            )
+            const SliverToBoxAdapter(child: SizedBox(height: defaultPadding)),
           ],
         ),
       ),
@@ -311,9 +316,7 @@ class MarkdownScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scan Details'),
-      ),
+      appBar: AppBar(title: const Text('Scan Details')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(
